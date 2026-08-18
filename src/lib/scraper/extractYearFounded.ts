@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { textWithSpaces } from './utils';
 
 // Allows a short gap of words between the trigger and the year
 const YEAR_PATTERN =
@@ -6,7 +7,7 @@ const YEAR_PATTERN =
 
 export function extractYearFounded(html: string): number | null {
   const $ = cheerio.load(html);
-  const match = YEAR_PATTERN.exec($('body').text());
+  const match = YEAR_PATTERN.exec(textWithSpaces($('body').html()));
   if (!match) return null;
 
   const year = Number(match[1]);

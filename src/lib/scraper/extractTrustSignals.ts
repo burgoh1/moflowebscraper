@@ -1,5 +1,6 @@
 import * as cheerio from 'cheerio';
 import type { TrustSignal, TrustSignalType } from '@/types/knowledge-base';
+import { textWithSpaces } from './utils';
 
 const MAX_SIGNALS = 10;
 
@@ -40,7 +41,9 @@ export function extractTrustSignals(html: string): TrustSignal[] {
       addSignal(label, type);
   });
 
-  for (const { label, type } of findSignalsInText($('body').text())) {
+  for (const { label, type } of findSignalsInText(
+    textWithSpaces($('body').html())
+  )) {
     addSignal(label, type);
   }
 

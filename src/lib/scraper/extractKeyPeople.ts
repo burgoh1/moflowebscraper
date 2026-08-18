@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import type { KeyPerson } from '@/types/knowledge-base';
-import { firstNonEmpty } from './utils';
+import { firstNonEmpty, textWithSpaces } from './utils';
 
 const CARD_HINT = /team|staff|member|person|leadership|bio|employee/i;
 const GENDER_WORD = /\b(male|female)\b/i;
@@ -40,7 +40,7 @@ export function extractKeyPeople(html: string): KeyPerson[] {
       ...[...bioCandidates].sort((a, b) => b.length - a.length)
     );
 
-    const genderMatch = GENDER_WORD.exec(el.text());
+    const genderMatch = GENDER_WORD.exec(textWithSpaces(el.html()));
     const gender = genderMatch
       ? (genderMatch[1].toLowerCase() as 'male' | 'female')
       : null;
