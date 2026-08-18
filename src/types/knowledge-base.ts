@@ -87,7 +87,7 @@ export type KeyPerson = {
   name: string;
   title: string | null;
   gender: 'male' | 'female' | 'unspecified' | null;
-  backgroundDescription: string | null;
+  description: string | null;
 };
 
 // Offerings
