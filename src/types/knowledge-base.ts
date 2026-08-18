@@ -84,7 +84,7 @@ export type OnlinePresence = {
 
 // Key People
 export type KeyPerson = {
-  name: string | null;
+  name: string;
   title: string | null;
   gender: 'male' | 'female' | 'unspecified' | null;
   backgroundDescription: string | null;
@@ -104,7 +104,7 @@ export type Offering = {
 
 // Testimonials & Social Proof (my custom foundation)
 export type Testimonial = {
-  quoteText: string | null;
+  quoteText: string;
   authorName: string | null;
   authorTitleOrCompany: string | null;
   sourceContext: string | null;
@@ -120,7 +120,7 @@ export type TrustSignalType =
   | 'other';
 
 export type TrustSignal = {
-  label: string | null;
+  label: string;
   type: TrustSignalType;
   issuer: string | null;
   description: string | null;
