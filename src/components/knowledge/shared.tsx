@@ -3,7 +3,32 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import type { DataQualityFlag } from '@/types/knowledge-base';
+import type { DataQualityFlag, ScrapeStatus } from '@/types/knowledge-base';
+
+const SCRAPE_STATUS_LABEL: Record<ScrapeStatus, string> = {
+  pending: 'Pending',
+  success: 'Success',
+  partial: 'Partial',
+  failed: 'Failed',
+};
+
+const SCRAPE_STATUS_VARIANT: Record<
+  ScrapeStatus,
+  'default' | 'warning' | 'success' | 'destructive'
+> = {
+  pending: 'default',
+  success: 'success',
+  partial: 'warning',
+  failed: 'destructive',
+};
+
+export function ScrapeStatusBadge({ status }: { status: ScrapeStatus }) {
+  return (
+    <Badge variant={SCRAPE_STATUS_VARIANT[status]}>
+      {SCRAPE_STATUS_LABEL[status]}
+    </Badge>
+  );
+}
 
 const STATUS_LABEL: Record<DataQualityFlag['status'], string> = {
   missing: 'Not found',

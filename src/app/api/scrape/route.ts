@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { scrapeWebsite } from '@/lib/scraper/scrapeWebsite';
+import { enrichDraft } from '@/lib/enrichment/mockEnrichment';
 
 export async function POST(request: Request) {
   let body: unknown;
@@ -35,5 +36,5 @@ export async function POST(request: Request) {
   }
 
   const draft = await scrapeWebsite(normalizedUrl);
-  return NextResponse.json(draft);
+  return NextResponse.json(enrichDraft(draft));
 }
