@@ -20,6 +20,7 @@ import {
   TrustSignalsSection,
 } from '../ListSections';
 import { cleanDraftForSave } from '../cleanDraftForSave';
+import { downloadKnowledgeBaseJson } from '../downloadKnowledgeBaseJson';
 import type { KnowledgeBase } from '@/types/knowledge-base';
 
 type Status = 'idle' | 'saving' | 'deleting' | 'error';
@@ -105,14 +106,23 @@ export function KnowledgeDetailView({ initial }: { initial: KnowledgeBase }) {
             {new Date(record.updatedAt).toLocaleString()}
           </p>
         </div>
-        <Button
-          type="button"
-          variant="destructive"
-          onClick={handleDelete}
-          disabled={status === 'deleting'}
-        >
-          {status === 'deleting' ? 'Deleting...' : 'Delete'}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => downloadKnowledgeBaseJson(record)}
+          >
+            Download JSON
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={status === 'deleting'}
+          >
+            {status === 'deleting' ? 'Deleting...' : 'Delete'}
+          </Button>
+        </div>
       </div>
 
       {errorMessage && (

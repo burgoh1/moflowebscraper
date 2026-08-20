@@ -1,6 +1,5 @@
 // Keyword-matched stand-ins for what /prompts/industry-classification-prompt.md
 // and /prompts/market-and-customers-prompt.md would return from a real LLM call.
-// Deliberately simple: this is a rule-based mock, not a classifier.
 
 export type IndustryProfile = {
   industry: string;
@@ -42,7 +41,14 @@ const INDUSTRY_PROFILES: { keywords: string[]; profile: IndustryProfile }[] = [
     },
   },
   {
-    keywords: ['real estate', 'realtor', 'listing', 'homes for sale', 'condo', 'penthouse'],
+    keywords: [
+      'real estate',
+      'realtor',
+      'listing',
+      'homes for sale',
+      'condo',
+      'penthouse',
+    ],
     profile: {
       industry: 'Real Estate',
       businessModelTemplate: (name) =>
@@ -80,7 +86,10 @@ const INDUSTRY_PROFILES: { keywords: string[]; profile: IndustryProfile }[] = [
       industry: 'IoT / Remote Monitoring Technology',
       businessModelTemplate: (name) =>
         `${name} likely sells hardware plus an ongoing software/monitoring subscription, possibly through channel partners.`,
-      targetBuyers: ['Facility or operations managers', 'Technology-forward SMBs'],
+      targetBuyers: [
+        'Facility or operations managers',
+        'Technology-forward SMBs',
+      ],
       customerNeeds:
         'Customers need early warning of equipment or system failures so they can shift from reactive to proactive maintenance.',
     },

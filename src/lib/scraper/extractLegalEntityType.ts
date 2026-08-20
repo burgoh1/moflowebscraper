@@ -7,9 +7,7 @@ const ENTITY_SUFFIXES: { pattern: RegExp; label: string }[] = [
   { pattern: /\bCo\.?\b/i, label: 'Co' },
 ];
 
-// Reads the suffix off the already-extracted company name rather than the
-// page — legal entity type is almost always right there in the name itself
-// ("Acme Consulting, LLC"), so there's no need to re-scan the HTML.
+// Reads the suffix off the already-extracted company name rather than the page
 export function extractLegalEntityType(
   companyName: string | null
 ): string | null {

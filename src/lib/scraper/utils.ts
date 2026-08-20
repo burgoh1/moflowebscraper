@@ -1,4 +1,88 @@
 import * as cheerio from 'cheerio';
+import type { Element } from 'domhandler';
+
+function cardGroupsWithin(
+  $: cheerio.CheerioAPI,
+  root: cheerio.Cheerio<Element>
+): Element[] {
+  const seen = new Set<Element>();
+  const groups: Element[] = [];
+  const scopeElements: Element[] = [
+    ...root.toArray(),
+    ...root.find('*').toArray(),
+  ];
+
+  for (const element of scopeElements) {
+    const byTag = new Map<string, Element[]>();
+
+    $(element)
+      .children()
+      .each((_, child) => {
+        const tag = child.tagName?.toLowerCase();
+        if (!tag) return;
+        const siblings = byTag.get(tag) ?? [];
+        siblings.push(child);
+        byTag.set(tag, siblings);
+      });
+
+    for (const siblings of byTag.values()) {
+      if (siblings.length < 2) continue;
+
+      const descendantCounts = siblings.map(
+        (sibling) => $(sibling).find('*').length
+      );
+      const sameShape = descendantCounts.every(
+        (count) => count === descendantCounts[0]
+      );
+      if (!sameShape) continue;
+
+      for (const sibling of siblings) {
+        if (seen.has(sibling)) continue;
+        if ($(sibling).find('h1,h2,h3,h4,h5,h6').length !== 1) continue;
+        seen.add(sibling);
+        groups.push(sibling);
+      }
+    }
+  }
+
+  return groups;
+}
+
+function looksLikeSectionTitle(text: string): boolean {
+  const trimmed = text.trim();
+  return trimmed.length > 0 && trimmed.length <= 50 && !trimmed.endsWith('?');
+}
+
+export function findCardGroupsNearHeading(
+  $: cheerio.CheerioAPI,
+  hint: RegExp
+): Element[] {
+  const seen = new Set<Element>();
+  const results: Element[] = [];
+
+  $('h1,h2,h3,h4,h5,h6')
+    .filter(
+      (_, heading) =>
+        looksLikeSectionTitle($(heading).text()) && hint.test($(heading).text())
+    )
+    .each((_, heading) => {
+      let ancestor = $(heading).parent();
+      for (let depth = 0; depth < 8 && ancestor.length > 0; depth++) {
+        const cards = cardGroupsWithin($, ancestor);
+        if (cards.length >= 2) {
+          for (const card of cards) {
+            if (seen.has(card)) continue;
+            seen.add(card);
+            results.push(card);
+          }
+          break; // found the section — stop widening the search
+        }
+        ancestor = ancestor.parent();
+      }
+    });
+
+  return results;
+}
 
 // Returns the first non-empty string from a list of candidates
 export function firstNonEmpty(

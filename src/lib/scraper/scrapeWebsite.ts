@@ -123,7 +123,7 @@ export async function scrapeWebsite(
       (person) => person.name.toLowerCase()
     ),
     offerings: dedupeByKey(
-      pages.flatMap((page) => extractOfferings(page.html)),
+      pages.flatMap((page) => extractOfferings(page.html, page.label)),
       (offering) => offering.name.toLowerCase()
     ),
     testimonials: dedupeByKey(

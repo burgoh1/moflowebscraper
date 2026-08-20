@@ -1,6 +1,43 @@
 import * as cheerio from 'cheerio';
+import type { Element } from 'domhandler';
 
 type PathPattern = { pattern: RegExp; weight: number };
+
+// only checked when path scoring finds nothing, so it can't change behavior
+// on a site where path scoring already works.
+const LINK_CONTEXT_HINT = /\b(products?|apps?|solutions?|offerings?)\b/i;
+const LINK_CONTEXT_SCORE = 2;
+
+function nearbySectionHeadingMatches(
+  $: cheerio.CheerioAPI,
+  link: Element,
+  hint: RegExp
+): boolean {
+  let ancestor = $(link).parent();
+  for (let depth = 0; depth < 5 && ancestor.length > 0; depth++) {
+    // Exclude headings inside ANY link
+    const heading = ancestor
+      .find('h1,h2,h3,h4,h5,h6')
+      .filter((_, h) => !isInsideAnyLink($, h))
+      .first();
+    if (heading.length > 0) {
+      const text = heading.text().trim();
+      // Found the nearest heading for this section
+      return text.length > 0 && text.length <= 50 && hint.test(text);
+    }
+    ancestor = ancestor.parent();
+  }
+  return false;
+}
+
+function isInsideAnyLink($: cheerio.CheerioAPI, node: Element): boolean {
+  let current = $(node).parent();
+  while (current.length > 0) {
+    if (current.get(0)?.tagName?.toLowerCase() === 'a') return true;
+    current = current.parent();
+  }
+  return false;
+}
 
 // Higher weight = stronger signal. Scores combine when multiple patterns match.
 const RELEVANT_PATH_PATTERNS: PathPattern[] = [
@@ -30,7 +67,7 @@ const EXCLUDED_HREF_PATTERNS: RegExp[] = [
 export function discoverInternalPages(
   homepageHtml: string,
   baseUrl: string,
-  maxPages: number = 8
+  maxPages: number = 15
 ): string[] {
   const $ = cheerio.load(homepageHtml);
   const base = new URL(baseUrl);
@@ -53,11 +90,19 @@ export function discoverInternalPages(
     if (resolved.hostname !== base.hostname) return;
     if (resolved.pathname === base.pathname) return;
 
-    const score = RELEVANT_PATH_PATTERNS.reduce(
+    let score = RELEVANT_PATH_PATTERNS.reduce(
       (total, { pattern, weight }) =>
         pattern.test(resolved.pathname) ? total + weight : total,
       0
     );
+
+    if (
+      score === 0 &&
+      nearbySectionHeadingMatches($, element, LINK_CONTEXT_HINT)
+    ) {
+      score = LINK_CONTEXT_SCORE;
+    }
+
     if (score === 0) return;
 
     // drop query string/fragment so duplicate links to the same page don't double count

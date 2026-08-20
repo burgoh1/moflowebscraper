@@ -1,11 +1,7 @@
 import type { KnowledgeBaseDraft } from '@/types/knowledge-base';
 import { classifyIndustry } from './industryProfiles';
 
-// Placeholder stand-ins for real LLM calls. Each function here mocks the
-// prompt documented in /prompts — see the header comment on each function
-// for which one. None of this calls a real model; it's deterministic text
-// built from other scraped fields, clearly flagged in the UI via the
-// "ai_generated_mock" data quality status.
+// Placeholder stand-ins for real LLM calls
 type EnrichableField =
   | 'companyFoundation.industry'
   | 'companyFoundation.businessModel'
@@ -15,10 +11,7 @@ type EnrichableField =
   | 'marketAndCustomers.customerNeeds';
 
 // Runs after scrapeWebsite() returns. Fills the handful of fields the real
-// extractors deliberately leave null (they require judgment, not pattern
-// matching) with mock placeholder text, and re-labels the corresponding
-// dataQuality flags from "missing" to "ai_generated_mock" so the UI badge
-// makes it obvious which fields are real extraction vs. simulated AI output.
+// extractors deliberately leave null
 export function enrichDraft(draft: KnowledgeBaseDraft): KnowledgeBaseDraft {
   if (draft.scrapeStatus === 'failed') return draft;
 
@@ -26,12 +19,13 @@ export function enrichDraft(draft: KnowledgeBaseDraft): KnowledgeBaseDraft {
   const offeringsText = draft.offerings
     .map((o) => `${o.name} ${o.description ?? ''}`)
     .join(' ');
-  const classificationText = `${draft.companyFoundation.overview ?? ''} ${offeringsText}`;
+  const classificationText = `${
+    draft.companyFoundation.overview ?? ''
+  } ${offeringsText}`;
   const profile = classifyIndustry(classificationText);
 
   const enrichedFieldPaths: string[] = [];
-  const markEnriched = (path: EnrichableField) =>
-    enrichedFieldPaths.push(path);
+  const markEnriched = (path: EnrichableField) => enrichedFieldPaths.push(path);
 
   const industry = draft.companyFoundation.industry;
   const nextIndustry = industry ?? profile.industry;
@@ -55,7 +49,8 @@ export function enrichDraft(draft: KnowledgeBaseDraft): KnowledgeBaseDraft {
   const targetBuyers = draft.marketAndCustomers.targetBuyers;
   const nextTargetBuyers =
     targetBuyers.length > 0 ? targetBuyers : profile.targetBuyers;
-  if (targetBuyers.length === 0) markEnriched('marketAndCustomers.targetBuyers');
+  if (targetBuyers.length === 0)
+    markEnriched('marketAndCustomers.targetBuyers');
 
   const customerNeeds = draft.marketAndCustomers.customerNeeds;
   const nextCustomerNeeds = customerNeeds ?? profile.customerNeeds;
@@ -132,7 +127,9 @@ function mockWritingStyle(overview: string | null): string {
   const sentenceCount = overview.split(/[.!?]+/).filter(Boolean).length || 1;
   const avgWordsPerSentence = overview.split(/\s+/).length / sentenceCount;
   const lengthDescriptor =
-    avgWordsPerSentence > 22 ? 'longer, detailed sentences' : 'short, direct sentences';
+    avgWordsPerSentence > 22
+      ? 'longer, detailed sentences'
+      : 'short, direct sentences';
 
   return (
     `Placeholder analysis based on the homepage overview: appears to favor ${lengthDescriptor}. ` +

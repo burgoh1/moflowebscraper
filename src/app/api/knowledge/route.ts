@@ -32,8 +32,6 @@ export async function POST(request: Request) {
   return NextResponse.json(saved, { status: 201 });
 }
 
-// A lightweight structural check, not full schema validation — good enough
-// to catch "this isn't even shaped like a draft" before writing it to disk.
 function isKnowledgeBaseDraft(value: unknown): value is KnowledgeBaseDraft {
   return (
     typeof value === 'object' &&

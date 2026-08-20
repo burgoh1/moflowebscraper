@@ -2,11 +2,12 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { LayoutGrid, List as ListIcon, Trash2 } from 'lucide-react';
+import { Download, LayoutGrid, List as ListIcon, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrapeStatusBadge } from '../shared';
+import { downloadKnowledgeBaseJson } from '../downloadKnowledgeBaseJson';
 import type { KnowledgeBase, ScrapeStatus } from '@/types/knowledge-base';
 
 type ViewMode = 'card' | 'table';
@@ -143,19 +144,34 @@ export function KnowledgeListView({
                       {kb.companyFoundation.industry ?? 'Industry unknown'}
                     </p>
                     <p className="text-xs text-neutral-500">
-                      {kb.offerings.length} offerings ·{' '}
-                      {kb.keyPeople.length} people ·{' '}
-                      {kb.testimonials.length} testimonials
+                      {kb.offerings.length} offerings · {kb.keyPeople.length}{' '}
+                      people · {kb.testimonials.length} testimonials
                     </p>
                     <p className="text-xs text-neutral-400">
                       Updated {new Date(kb.updatedAt).toLocaleDateString()}
                     </p>
                     <div className="flex gap-2 pt-2">
-                      <Link href={`/knowledge/view/${kb.id}`} className="flex-1">
-                        <Button type="button" variant="outline" className="w-full">
+                      <Link
+                        href={`/knowledge/view/${kb.id}`}
+                        className="flex-1"
+                      >
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full"
+                        >
                           View
                         </Button>
                       </Link>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => downloadKnowledgeBaseJson(kb)}
+                        aria-label="Download JSON"
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
                       <Button
                         type="button"
                         variant="destructive"
@@ -186,11 +202,14 @@ export function KnowledgeListView({
                 </thead>
                 <tbody>
                   {filtered.map((kb) => (
-                    <tr key={kb.id} className="border-b border-neutral-100 last:border-0">
+                    <tr
+                      key={kb.id}
+                      className="border-b border-neutral-100 last:border-0"
+                    >
                       <td className="px-4 py-2 font-medium">
                         {kb.companyName ?? 'Untitled'}
                       </td>
-                      <td className="max-w-[200px] truncate px-4 py-2 text-neutral-500">
+                      <td className="max-w-50 truncate px-4 py-2 text-neutral-500">
                         {kb.sourceUrl}
                       </td>
                       <td className="px-4 py-2">
@@ -209,6 +228,14 @@ export function KnowledgeListView({
                               View
                             </Button>
                           </Link>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => downloadKnowledgeBaseJson(kb)}
+                          >
+                            Download
+                          </Button>
                           <Button
                             type="button"
                             variant="destructive"

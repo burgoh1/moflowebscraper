@@ -51,8 +51,6 @@ export function extractTrustSignals(html: string): TrustSignal[] {
 }
 
 // Several patterns can match overlapping substrings of the same phrase
-// (e.g. "BBB Accredited Business" vs the generic "Accredited..." fallback).
-// Keep only the longest match when one match's range fully contains another.
 function findSignalsInText(
   text: string
 ): { label: string; type: TrustSignalType }[] {

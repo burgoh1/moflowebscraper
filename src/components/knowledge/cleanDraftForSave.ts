@@ -9,12 +9,7 @@ function cleanStringList(values: string[]): string[] {
   return values.map((v) => v.trim()).filter(Boolean);
 }
 
-// Textareas keep blank lines/entries while the user is actively editing (see
-// StringListField) so the controlled input doesn't fight their cursor. This
-// is the one place that gets cleaned up, right before the draft is sent to
-// the server — converting "" back to null and dropping blank list entries.
-// Shared by the builder (POST /api/knowledge) and the view/edit page
-// (PATCH /api/knowledge/[id]) so both save paths normalize the same way.
+// Textareas keep blank lines/entries while the user is actively editing
 export function cleanDraftForSave(
   draft: KnowledgeBaseDraft
 ): KnowledgeBaseDraft {
