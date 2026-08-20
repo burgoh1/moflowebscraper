@@ -1,1 +1,25 @@
 @import 'tailwindcss';
+
+@theme {
+  /* Brand */
+  --color-primary: #2663eb;
+  --color-primary-hover: #1d4fc4;
+  --color-primary-subtle: #e6edfd;
+
+  /* Status */
+  --color-success: #16a34a;
+  --color-status-low: #ef4444;
+  --color-status-mid: #eab308;
+  --color-status-high: #16a34a;
+
+  /* Hero / dark gradient */
+  --color-hero-from: #0a0e27;
+  --color-hero-to: #2f5fe0;
+
+  /* Surfaces */
+  --color-surface: #ffffff;
+  --color-app-bg: #f7f8fb;
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.04), 0 4px 12px rgba(16, 24, 40, 0.06);
+}
